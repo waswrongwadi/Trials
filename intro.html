@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You...</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        .text-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            z-index: 2;
+            width: 80%;
+            max-width: 800px;
+        }
+        
+        .text-visible {
+            opacity: 1;
+        }
+        
+        .message {
+            font-size: 1.8rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+        
+        .highlight {
+            color: #ff4d8d;
+            font-weight: 600;
+        }
+        
+        .continue-btn {
+            background: transparent;
+            color: #ff4d8d;
+            border: 2px solid #ff4d8d;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            font-family: 'Quicksand', sans-serif;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .continue-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s ease 1s;
+        }
+        
+        .continue-btn:hover {
+            background: #ff4d8d;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 77, 141, 0.4);
+        }
+        
+        .loading-text {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Apple-like glow effect */
+        .glow {
+            text-shadow: 0 0 10px rgba(255, 77, 141, 0.5),
+                         0 0 20px rgba(255, 77, 141, 0.3),
+                         0 0 30px rgba(255, 77, 141, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <canvas id="drawingCanvas"></canvas>
+        
+        <div class="text-container" id="textContainer">
+            <div class="message" id="messageText">
+                <span class="highlight">Okay so this may sound so sudden</span><br>
+                and possibly weird and maybe even creepy<br>
+                and hopefully sweet, but...
+            </div>
+            <button class="continue-btn" id="continueBtn">Continue to the Question →</button>
+        </div>
+        
+        <div class="loading-text" id="loadingText">Loading romantic thoughts...</div>
+    </div>
+    
+    <script src="music.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('drawingCanvas');
+            const ctx = canvas.getContext('2d');
+            const textContainer = document.getElementById('textContainer');
+            const continueBtn = document.getElementById('continueBtn');
+            const loadingText = document.getElementById('loadingText');
+            const messageText = document.getElementById('messageText');
+            
+            // Set canvas size
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Apple screensaver parameters
+            const particles = [];
+            const particleCount = 150;
+            const connectionDistance = 100;
+            let mouseX = -10000;
+            let mouseY = -10000;
+            
+            // Create particles
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                    this.color = `rgba(255, ${Math.floor(Math.random() * 100 + 100)}, ${Math.floor(Math.random() * 100 + 150)}, ${Math.random() * 0.3 + 0.1})`;
+                }
+                
+                update() {
+                    // Move particle
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    
+                    // Bounce off edges
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                    
+                    // Attract to mouse
+                    const dx = mouseX - this.x;
+                    const dy = mouseY - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        const angle = Math.atan2(dy, dx);
+                        const force = (150 - distance) / 150 * 0.02;
+                        this.vx += Math.cos(angle) * force;
+                        this.vy += Math.sin(angle) * force;
+                    }
+                    
+                    // Limit speed
+                    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                    if (speed > 1) {
+                        this.vx = (this.vx / speed) * 1;
+                        this.vy = (this.vy / speed) * 1;
+                    }
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+            
+            // Initialize particles
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+            
+            // Draw connections between particles
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < connectionDistance) {
+                            const opacity = 1 - (distance / connectionDistance);
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(255, 182, 193, ${opacity * 0.1})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            // Animation loop
+            function animate() {
+                // Clear with fade effect
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Update and draw particles
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                // Draw connections
+                drawConnections();
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // Mouse tracking
+            canvas.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                mouseX = -10000;
+                mouseY = -10000;
+            });
+            
+            // Start animation
+            animate();
+            
+            // Text reveal animation
+            setTimeout(() => {
+                // Show loading text
+                loadingText.style.opacity = '1';
+                loadingText.style.transition = 'opacity 1s';
+                
+                // Animate dots in loading text
+                let dots = 0;
+                const dotInterval = setInterval(() => {
+                    dots = (dots + 1) % 4;
+                    loadingText.textContent = 'Loading romantic thoughts' + '.'.repeat(dots);
+                }, 500);
+                
+                // Reveal message after delay
+                setTimeout(() => {
+                    textContainer.classList.add('text-visible');
+                    messageText.classList.add('glow');
+                    
+                    // Clear loading animation
+                    clearInterval(dotInterval);
+                    loadingText.style.opacity = '0';
+                    
+                    // Show continue button after message
+                    setTimeout(() => {
+                        continueBtn.classList.add('visible');
+                    }, 1000);
+                    
+                }, 3000); // Wait 3 seconds before showing message
+                
+            }, 1000); // Start loading animation after 1 second
+            
+            // Continue button click
+            continueBtn.addEventListener('click', function() {
+                // Add click effect
+                this.style.transform = 'scale(0.95)';
+                this.style.opacity = '0.8';
+                
+                // Fade out everything
+                textContainer.style.opacity = '0';
+                textContainer.style.transition = 'opacity 0.8s';
+                
+                // Navigate to question page
+                setTimeout(() => {
+                    window.location.href = 'question.html';
+                }, 800);
+            });
+            
+            // Also allow clicking anywhere to continue after message is shown
+            let canContinue = false;
+            setTimeout(() => {
+                canContinue = true;
+                document.addEventListener('click', function quickContinue(e) {
+                    if (canContinue && e.target !== continueBtn) {
+                        continueBtn.click();
+                    }
+                });
+            }, 4000);
+            
+            // Start music
+            setTimeout(() => {
+                if (window.getMusicPlayer && !window.getMusicPlayer().isPlaying) {
+                    window.getMusicPlayer().audio.play().then(() => {
+                        window.getMusicPlayer().isPlaying = true;
+                    });
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

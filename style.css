@@ -1,0 +1,306 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    padding: 20px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Common styles */
+.container {
+    text-align: center;
+    max-width: 800px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 0, 100, 0.2);
+    position: relative;
+}
+
+.title {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 3.5rem;
+    color: #ff4d8d;
+    margin-bottom: 30px;
+}
+
+/* Landing page */
+.landing {
+    background: linear-gradient(135deg, #ffafcc, #ffc8dd);
+}
+
+.heart-pulse {
+    font-size: 5rem;
+    animation: pulse 1.5s infinite;
+    margin: 30px 0;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: #590d22;
+    margin-bottom: 40px;
+}
+
+.enter-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: #ff4d8d;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(255, 77, 141, 0.4);
+}
+
+.enter-btn:hover {
+    background: #ff0066;
+    transform: scale(1.05);
+}
+
+/* Question page */
+.question-page {
+    background: linear-gradient(135deg, #ffc8dd, #ffafcc);
+}
+
+.main-question {
+    font-family: 'Quicksand', sans-serif; /* Instead of Great Vibes */
+    font-size: 4rem;
+    color: #ff0066;
+    margin-bottom: 40px;
+    animation: fadeIn 2s;
+}
+
+.hearts-animation {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.heart {
+    font-size: 2.5rem;
+    animation: float 3s infinite ease-in-out;
+}
+
+.heart:nth-child(2) { animation-delay: 0.5s; }
+.heart:nth-child(3) { animation-delay: 1s; }
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 50px 0;
+}
+
+.btn {
+    padding: 20px 50px;
+    font-size: 1.8rem;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    text-decoration: none;
+    min-width: 180px;
+}
+
+.yes-btn {
+    background: #ff4d8d;
+    color: white;
+    box-shadow: 0 8px 20px rgba(255, 77, 141, 0.4);
+}
+
+.yes-btn:hover {
+    background: #ff0066;
+    transform: scale(1.1);
+}
+
+.no-btn {
+    background: #e0e0e0;
+    color: #666;
+    position: relative;
+    transition: all 0.1s;
+}
+
+.hint {
+    color: #888;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* Yes page */
+.yes-page {
+    background: linear-gradient(135deg, #ffafcc, #ffc8dd, #ffafcc);
+}
+
+.celebrate {
+    font-family: 'Quicksand', sans-serif; /* Instead of Great Vibes */
+    font-size: 4.5rem;
+    color: #ff0066;
+    margin-bottom: 30px;
+}
+
+.big-heart {
+    font-size: 8rem;
+    animation: heartbeat 1.5s infinite;
+    margin: 30px 0;
+}
+
+.message {
+    font-size: 1.8rem;
+    color: #590d22;
+    margin: 15px 0;
+}
+
+.fireworks {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.firework {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #ff0066;
+    border-radius: 50%;
+    animation: explode 2s infinite;
+}
+
+.firework:nth-child(1) { top: 20%; left: 20%; }
+.firework:nth-child(2) { top: 60%; left: 70%; animation-delay: 0.5s; }
+.firework:nth-child(3) { top: 30%; left: 80%; animation-delay: 1s; }
+
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* Floating note animation */
+@keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+/* Enhanced No button effects */
+.no-btn {
+    overflow: hidden;
+}
+
+/* YES button glow effects */
+.yes-btn.glow {
+    animation: intenseGlow 0.8s infinite alternate;
+}
+
+@keyframes intenseGlow {
+    from { box-shadow: 0 0 20px #ff4d8d, 0 0 30px #ff4d8d, 0 0 40px #ff4d8d; }
+    to { box-shadow: 0 0 25px #ff0066, 0 0 35px #ff0066, 0 0 45px #ff0066; }
+}
+/* Fix for NO button positioning */
+.no-btn {
+    background: #e0e0e0;
+    color: #666;
+    position: relative; /* Changed from default */
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 100;
+}
+
+/* Make sure buttons container allows positioning */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 50px 0;
+    position: relative;
+    min-height: 100px; /* Give space for button to move */
+}
+
+/* Prevent page jumping when button moves */
+body.question-page {
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Glow animation for YES button */
+@keyframes heartbeat {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 30px 10px rgba(255, 77, 141, 0.7),
+                    0 8px 25px rgba(255, 77, 141, 0.5);
+    }
+    50% { 
+        transform: scale(1.02);
+        box-shadow: 0 0 35px 12px rgba(255, 77, 141, 0.8),
+                    0 10px 28px rgba(255, 77, 141, 0.6);
+    }
+}
+
+@keyframes intenseGlow {
+    0% {
+        box-shadow: 
+            0 0 30px 10px rgba(255, 0, 255, 0.6),
+            0 8px 25px rgba(255, 0, 255, 0.4);
+    }
+    100% {
+        box-shadow: 
+            0 0 40px 15px rgba(255, 0, 255, 0.8),
+            0 10px 30px rgba(255, 0, 255, 0.6);
+    }
+}
+/* Custom scrollbar for the paper */
+.paper-letter::-webkit-scrollbar {
+    width: 6px;
+}
+
+.paper-letter::-webkit-scrollbar-track {
+    background: rgba(255, 182, 193, 0.1);
+    border-radius: 10px;
+}
+
+.paper-letter::-webkit-scrollbar-thumb {
+    background: #ff4d8d;
+    border-radius: 10px;
+}
+
+.paper-letter::-webkit-scrollbar-thumb:hover {
+    background: #ff0066;
+}
